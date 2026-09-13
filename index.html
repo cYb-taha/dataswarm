@@ -1,0 +1,1777 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Data Swarm | Fish data, ready to explore</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    :root {
+      --paper: #f4f1e8;
+      --ink: #123b38;
+      --muted: #667873;
+      --line: #d6ddd3;
+      --water: #b8dfe0;
+      --deep: #123b38;
+      --coral: #e36f55;
+      --yellow: #f2c85b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Space Grotesk", sans-serif;
+      transition: direction 0.2s ease;
+    }
+
+    /* RTL Support */
+    [dir="rtl"] {
+      font-family: "Tajawal", "Space Grotesk", sans-serif;
+    }
+
+    [dir="rtl"] body {
+      font-family: "Tajawal", "Space Grotesk", sans-serif;
+      text-align: right;
+    }
+
+    [dir="rtl"] .topbar {
+      flex-direction: row;
+    }
+
+    [dir="rtl"] .account-actions {
+      flex-direction: row-reverse;
+    }
+
+    [dir="rtl"] .lang-picker {
+      direction: ltr; /* keep flag buttons in natural order */
+    }
+
+    [dir="rtl"] .hero {
+      direction: rtl;
+    }
+
+    [dir="rtl"] .search span {
+      order: 2;
+    }
+
+    [dir="rtl"] .search input {
+      text-align: right;
+    }
+
+    [dir="rtl"] .primary-link span:last-child,
+    [dir="rtl"] .login-button span:last-child {
+      direction: ltr;
+      unicode-bidi: isolate;
+      transform: none;
+    }
+
+    [dir="rtl"] .fish-gallery-heading {
+      text-align: right;
+    }
+
+    [dir="rtl"] .product-meta {
+      flex-direction: row-reverse;
+    }
+
+    [dir="rtl"] .product-buy {
+      flex-direction: row-reverse;
+    }
+
+    [dir="rtl"] .wallet-balance {
+      flex-direction: row-reverse;
+    }
+
+    [dir="rtl"] .payment-modal-head,
+    [dir="rtl"] .download-library-head {
+      flex-direction: row-reverse;
+    }
+
+    [dir="rtl"] .photo-preview-close {
+      right: auto;
+      left: 22px;
+    }
+
+    [dir="rtl"] .depth {
+      right: auto;
+      left: 25px;
+    }
+
+    [dir="rtl"] .coordinate {
+      left: auto;
+      right: 28px;
+    }
+
+    [dir="rtl"] .photo-credit {
+      right: auto;
+      left: 17px;
+    }
+
+    [dir="rtl"] .fish-photo figcaption {
+      text-align: right;
+    }
+
+    [dir="rtl"] footer {
+      flex-direction: row-reverse;
+    }
+
+    /* Language Switcher Styling */
+    .lang-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: rgba(18, 51, 74, 0.07);
+      padding: 3px;
+      border-radius: 24px;
+      border: 1px solid var(--line);
+    }
+
+    .auth-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .auth-top-bar .lang-picker {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .lang-btn {
+      background: none;
+      border: 0;
+      color: var(--muted);
+      font: 500 11px "DM Mono", monospace;
+      padding: 5px 9px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      line-height: 1;
+    }
+
+    .auth-top-bar .lang-btn {
+      color: #b9d0c8;
+    }
+
+    .lang-btn:hover {
+      color: var(--deep);
+      background: rgba(7, 82, 120, 0.08);
+    }
+
+    .auth-top-bar .lang-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .lang-btn.active {
+      background: var(--deep);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(7, 82, 120, 0.25);
+    }
+
+    .auth-top-bar .lang-btn.active {
+      background: var(--yellow);
+      color: var(--ink);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    /* =========================
+       PROFESSIONAL LOGO
+       ========================= */
+
+    .data-logo {
+      position: relative;
+      width: 54px;
+      height: 48px;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .logo-circle {
+      position: absolute;
+      inset: 2px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 30%, #55c9df 0 8%, transparent 9%),
+        linear-gradient(145deg, #0a709d, #064568);
+      box-shadow:
+        0 5px 15px rgba(7,82,120,.25),
+        inset 0 1px 0 rgba(255,255,255,.35);
+      overflow: hidden;
+    }
+
+    .logo-circle::before {
+      content: "";
+      position: absolute;
+      width: 70px;
+      height: 28px;
+      left: -8px;
+      bottom: -4px;
+      border-radius: 50%;
+      border-top: 2px solid rgba(255,255,255,.38);
+      transform: rotate(-12deg);
+    }
+
+    .logo-fish {
+      position: absolute;
+      left: 13px;
+      top: 13px;
+      width: 27px;
+      height: 17px;
+      background: #f7d56f;
+      border-radius: 65% 45% 45% 65%;
+      transform: rotate(-5deg);
+      box-shadow: 0 2px 4px rgba(0,0,0,.15);
+    }
+
+    .logo-fish::before {
+      content: "";
+      position: absolute;
+      left: -9px;
+      top: 2px;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-right: 11px solid #f7d56f;
+    }
+
+    .logo-fish::after {
+      content: "";
+      position: absolute;
+      right: 5px;
+      top: 4px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #12334a;
+      box-shadow: 1px 1px 0 white;
+    }
+
+    .logo-wave {
+      position: absolute;
+      left: 5px;
+      right: 5px;
+      bottom: 7px;
+      height: 8px;
+      border-top: 2px solid rgba(255,255,255,.65);
+      border-radius: 50%;
+      transform: rotate(-5deg);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--deep);
+      text-decoration: none;
+      font-weight: 700;
+      letter-spacing: -.5px;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .brand-name strong {
+      font-size: 18px;
+      letter-spacing: -.7px;
+    }
+
+    .brand-name small {
+      margin-top: 4px;
+      color: var(--muted);
+      font: 8px "DM Mono";
+      letter-spacing: 1.7px;
+      text-transform: uppercase;
+    }
+
+    .auth-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .auth-brand .logo-circle {
+      box-shadow:
+        0 8px 25px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    /* =========================
+       AUTH
+       ========================= */
+
+    .auth-layout {
+      grid-template-columns:
+        minmax(150px, 1fr)
+        minmax(320px, 390px)
+        minmax(150px, 1fr);
+      gap: 5vw;
+    }
+
+    .auth-message {
+      grid-column: 1;
+    }
+
+    .login-card {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    #swarmCanvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    @media (max-width: 900px) {
+      .auth-layout {
+        grid-template-columns: 1fr minmax(300px, 390px) 1fr;
+        gap: 2vw;
+      }
+
+      .auth-message {
+        position: absolute;
+        left: 0;
+        top: 12%;
+        width: 220px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .auth-layout {
+        display: flex;
+      }
+
+      .auth-message {
+        position: static;
+        width: auto;
+      }
+    }
+
+    /* =========================
+       TOP BAR
+       ========================= */
+
+    .topbar {
+      background: rgba(246,251,252,.96);
+      backdrop-filter: blur(12px);
+    }
+
+    .account-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .session-actions button {
+      background: none;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 8px 10px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+
+    .session-actions button:hover {
+      border-color: var(--deep);
+      color: var(--deep);
+    }
+
+    /* =========================
+       PAYMENT
+       ========================= */
+
+    .payment-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(24,35,34,.52);
+    }
+
+    .payment-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .payment-modal {
+      width: min(440px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: var(--paper);
+      padding: 32px;
+      box-shadow: 0 25px 80px rgba(4,27,27,.28);
+    }
+
+    .payment-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 22px;
+    }
+
+    .payment-modal h2 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -1px;
+    }
+
+    .payment-close {
+      background: none;
+      font-size: 27px;
+      line-height: 1;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .payment-modal p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .payment-secure {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      color: var(--deep) !important;
+      font: 11px "DM Mono";
+      margin: 22px 0;
+    }
+
+    .payment-secure span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4fa47e;
+    }
+
+    .payment-continue,
+    .credit-purchase {
+      width: 100%;
+      padding: 15px;
+      background: var(--deep);
+      color: #fff;
+      font-size: 13px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .payment-continue:hover,
+    .credit-purchase:hover {
+      background: var(--coral);
+    }
+
+    .payment-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: var(--muted);
+      font: 10px "DM Mono";
+      text-transform: uppercase;
+    }
+
+    .payment-divider::before,
+    .payment-divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+    }
+
+    .paypal-button {
+      width: 100%;
+      padding: 14px;
+      background: #f2c94c;
+      color: #173b5d;
+      font-size: 13px;
+      font-weight: 600;
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* =========================
+       CREDITS
+       ========================= */
+
+    .credit-pill {
+      color: var(--deep);
+      font: 10px "DM Mono";
+      text-transform: uppercase;
+      background: none;
+      padding: 0;
+      cursor: pointer;
+      border: 0;
+    }
+
+    .credit-pill b {
+      color: var(--coral);
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    .credits-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 12;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(4,35,54,.72);
+    }
+
+    .credits-modal-backdrop[hidden] {
+      display: none;
+    }
+
+    .credits-modal {
+      width: min(460px, 100%);
+      background: var(--paper);
+      padding: 32px;
+      box-shadow: 0 25px 90px rgba(0,20,35,.35);
+    }
+
+    .wallet-balance {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 17px;
+    }
+
+    .wallet-balance strong {
+      color: var(--coral);
+      font: 500 24px "DM Mono";
+    }
+
+    .wallet-label {
+      display: block;
+      margin-top: 22px;
+      color: var(--muted);
+      font: 10px "DM Mono";
+      text-transform: uppercase;
+    }
+
+    .wallet-example {
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 0;
+    }
+
+    .code-status {
+      min-height: 18px;
+      margin: 10px 0 0;
+      color: var(--deep);
+      font: 11px "DM Mono";
+    }
+
+    /* =========================
+       REDEEM
+       ========================= */
+
+    .redeem-section {
+      background: #dff3f7;
+      padding: 70px 5vw;
+      border-top: 1px solid var(--line);
+    }
+
+    .redeem-section-inner {
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .redeem-section h2 {
+      margin: 0 0 12px;
+      color: var(--ink);
+      font-size: clamp(30px, 4vw, 48px);
+      letter-spacing: -1.5px;
+    }
+
+    .redeem-section p:not(.eyebrow) {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0 auto 22px;
+    }
+
+    .page-redeem-row {
+      display: flex;
+      max-width: 430px;
+      margin: auto;
+      gap: 8px;
+    }
+
+    .page-redeem-row input {
+      flex: 1;
+      min-width: 0;
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 14px;
+      font: 14px "DM Mono";
+      color: var(--ink);
+    }
+
+    .page-redeem-row button {
+      padding: 0 18px;
+      background: var(--deep);
+      color: #fff;
+      font-size: 12px;
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* =========================
+       PRODUCTS / PHOTOS
+       ========================= */
+
+    .hero-art {
+      background: #bfe8f1;
+    }
+
+    .product {
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .product-visual {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-visual img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: saturate(.9) contrast(.96);
+      transition: transform .5s ease;
+      cursor: zoom-in;
+    }
+
+    .product-visual img.photo-unavailable {
+      display: none;
+    }
+
+    .product:hover .product-visual img {
+      transform: scale(1.05);
+    }
+
+    .product-visual::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(10,35,32,.12),
+          transparent 46%,
+          rgba(10,35,32,.38)
+        );
+      pointer-events: none;
+    }
+
+    .product-visual .visual-label,
+    .product-visual .photo-credit {
+      z-index: 2;
+    }
+
+    .photo-credit {
+      position: absolute;
+      right: 17px;
+      bottom: 14px;
+      color: rgba(255,255,255,.82);
+      font: 9px "DM Mono";
+      text-transform: uppercase;
+    }
+
+    /* =========================
+       FISH GALLERY
+       ========================= */
+
+    .fish-gallery {
+      background: #e6f6f9;
+      padding: 80px 5vw 110px;
+    }
+
+    .fish-gallery-heading {
+      max-width: 1200px;
+      margin: 0 auto 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 25px;
+    }
+
+    .fish-gallery h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -1.5px;
+      color: var(--ink);
+    }
+
+    .fish-gallery-heading p {
+      max-width: 260px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .fish-gallery-grid {
+      max-width: 1200px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1.25fr .85fr .85fr;
+      gap: 14px;
+    }
+
+    .fish-photo {
+      margin: 0;
+      height: 280px;
+      overflow: hidden;
+      position: relative;
+      background: #bfe8f1;
+    }
+
+    .fish-photo:first-child {
+      height: 360px;
+      grid-row: span 2;
+    }
+
+    .fish-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .6s ease;
+    }
+
+    .fish-photo:hover img {
+      transform: scale(1.04);
+    }
+
+    .fish-photo figcaption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 28px 16px 14px;
+      color: #fff;
+      font: 11px "DM Mono";
+      background: linear-gradient(
+        transparent,
+        rgba(9,48,70,.72)
+      );
+    }
+
+    /* =========================
+       PHOTO PREVIEW
+       ========================= */
+
+    .photo-preview-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(4,35,54,.72);
+    }
+
+    .photo-preview-backdrop[hidden] {
+      display: none;
+    }
+
+    .photo-preview {
+      position: relative;
+      width: min(760px, 100%);
+      background: #fff;
+      padding: 12px 12px 24px;
+      box-shadow: 0 25px 90px rgba(0,20,35,.35);
+    }
+
+    .photo-preview img {
+      display: block;
+      width: 100%;
+      max-height: min(65vh, 520px);
+      object-fit: contain;
+      background: #bfe8f1;
+    }
+
+    .photo-preview div {
+      padding: 19px 12px 0;
+    }
+
+    .photo-preview h2 {
+      color: var(--ink);
+      margin: 0 0 8px;
+      font-size: 27px;
+      letter-spacing: -1px;
+    }
+
+    .photo-preview p:not(.eyebrow) {
+      color: var(--muted);
+      margin: 0;
+      font-size: 13px;
+    }
+
+    .photo-source {
+      display: inline-block;
+      margin-top: 16px;
+      color: var(--deep);
+      font: 11px "DM Mono";
+    }
+
+    .photo-preview-close {
+      position: absolute;
+      z-index: 1;
+      right: 22px;
+      top: 20px;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.92);
+      color: var(--ink);
+      font-size: 25px;
+      line-height: 1;
+      border: 0;
+      cursor: pointer;
+    }
+
+    /* =========================
+       ABOUT / FOOTER
+       ========================= */
+
+    .about {
+      background: #075278;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 5vw;
+      color: var(--muted);
+      background: var(--paper);
+      font: 10px "DM Mono";
+      text-transform: uppercase;
+      letter-spacing: .7px;
+    }
+
+    footer span:last-child {
+      color: var(--deep);
+      font-weight: 500;
+    }
+
+    .wave-footer {
+      height: 105px;
+      position: relative;
+      overflow: hidden;
+      background: #075278;
+    }
+
+    .wave-footer::before,
+    .wave-footer::after {
+      content: "";
+      position: absolute;
+      left: -5%;
+      width: 110%;
+      height: 115px;
+      border-radius: 50%;
+      background: var(--paper);
+    }
+
+    .wave-footer::before {
+      top: -75px;
+    }
+
+    .wave-footer::after {
+      top: -58px;
+      left: 45%;
+      background: #55b9d0;
+      opacity: .68;
+    }
+
+    /* =========================
+       RESPONSIVE
+       ========================= */
+
+    @media (max-width: 700px) {
+      .fish-gallery {
+        padding: 60px 20px 75px;
+      }
+
+      .fish-gallery-heading {
+        display: block;
+      }
+
+      .fish-gallery-heading p {
+        margin-top: 18px;
+      }
+
+      .fish-gallery-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .fish-photo,
+      .fish-photo:first-child {
+        height: 245px;
+        grid-row: auto;
+      }
+
+      .page-redeem-row {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .page-redeem-row button {
+        padding: 14px;
+      }
+
+      .photo-preview-backdrop {
+        padding: 14px;
+      }
+
+      .photo-preview {
+        padding: 8px 8px 20px;
+      }
+
+      .photo-preview img {
+        max-height: 52vh;
+      }
+
+      .photo-preview h2 {
+        font-size: 23px;
+      }
+
+      footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .session-actions button:first-child {
+        display: none;
+      }
+    }
+
+    .toast {
+      z-index: 30;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       LOGIN SCREEN
+       ========================= -->
+
+  <section class="auth-screen" id="authScreen">
+
+    <canvas id="swarmCanvas" aria-hidden="true"></canvas>
+
+    <div class="auth-glow auth-glow-one"></div>
+    <div class="auth-glow auth-glow-two"></div>
+
+    <div class="auth-content">
+
+      <div class="auth-top-bar">
+        <a class="auth-brand" href="#" aria-label="Data Swarm">
+          <span class="brand-mark data-logo">
+            <span class="logo-circle">
+              <span class="logo-fish"></span>
+              <span class="logo-wave"></span>
+            </span>
+          </span>
+          <span data-i18n="app_title">Data Swarm</span>
+        </a>
+
+        <div class="lang-picker" role="radiogroup" aria-label="Choose Language">
+          <button type="button" class="lang-btn active" data-lang="en" title="English">🇬🇧 EN</button>
+          <button type="button" class="lang-btn" data-lang="fr" title="Français">🇫🇷 FR</button>
+          <button type="button" class="lang-btn" data-lang="ar" title="العربية">🇸🇦 AR</button>
+        </div>
+      </div>
+
+      <div class="auth-layout">
+
+        <div class="auth-message">
+
+          <p class="eyebrow" data-i18n="auth_eyebrow">
+            A living library of fish data
+          </p>
+
+          <h1 data-i18n="auth_heading">
+            Follow the<br>
+            <em>whole school.</em>
+          </h1>
+
+          <p data-i18n="auth_desc">
+            Discover datasets that make aquatic life visible,
+            one signal at a time.
+          </p>
+
+          <div class="swarm-status">
+            <span></span>
+            <span data-i18n="auth_swarm_status">The swarm follows your cursor</span>
+          </div>
+
+        </div>
+
+        <form
+          class="login-card"
+          id="loginForm"
+          novalidate
+        >
+
+          <p class="eyebrow" data-i18n="login_eyebrow">
+            Welcome back
+          </p>
+
+          <h2 data-i18n="login_title">
+            Enter the water
+          </h2>
+
+          <label for="displayName" data-i18n="login_label_name">
+            Your name
+          </label>
+
+          <input
+            id="displayName"
+            name="displayName"
+            type="text"
+            autocomplete="name"
+            maxlength="24"
+            placeholder="Taha"
+            data-i18n-ph="login_name_ph"
+            required
+          >
+
+          <label for="email" data-i18n="login_label_email">
+            Email address
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            placeholder="you@example.com"
+            data-i18n-ph="login_email_ph"
+            required
+          >
+
+          <p
+            class="form-error"
+            id="formError"
+            role="alert"
+          ></p>
+
+          <button
+            class="login-button"
+            type="submit"
+          >
+            <span data-i18n="login_btn">Sign in to Data Swarm</span>
+            <span>↗</span>
+          </button>
+
+          <p class="login-note" data-i18n="login_note">
+            Your name appears when you explore and download datasets.
+          </p>
+
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================
+       APPLICATION
+       ========================= -->
+
+  <div id="appShell" hidden>
+
+    <button class="ask-launcher" id="askLauncher" type="button" aria-controls="askDataSwarm" aria-expanded="false">
+      <span class="ask-launcher-mark" aria-hidden="true">✦</span>
+      <span data-i18n="ask_launcher">Data Swarm AI</span>
+      <span class="ask-launcher-status" aria-hidden="true"></span>
+    </button>
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+      <a
+        class="brand"
+        href="#top"
+        aria-label="Data Swarm home"
+      >
+
+        <span class="brand-mark data-logo">
+
+          <span class="logo-circle">
+            <span class="logo-fish"></span>
+            <span class="logo-wave"></span>
+          </span>
+
+        </span>
+
+        <span class="brand-name">
+          <strong data-i18n="app_title">Data Swarm</strong>
+          <small data-i18n="app_subtitle">Aquatic Data Library</small>
+        </span>
+
+      </a>
+
+
+      <nav aria-label="Main navigation">
+
+        <a href="#catalog" data-i18n="nav_explore">
+          Explore data
+        </a>
+
+        <a href="#about" data-i18n="nav_researchers">
+          For researchers
+        </a>
+
+      </nav>
+
+      <!-- Language Selector -->
+      <div class="lang-picker" role="radiogroup" aria-label="Choose Language">
+        <button type="button" class="lang-btn active" data-lang="en" title="English">🇬🇧 EN</button>
+        <button type="button" class="lang-btn" data-lang="fr" title="Français">🇫🇷 FR</button>
+        <button type="button" class="lang-btn" data-lang="ar" title="العربية">🇸🇦 AR</button>
+      </div>
+
+      <div class="account-actions">
+
+        <!-- Balance can be updated by app.js -->
+
+        <button
+          class="credit-pill"
+          id="creditPill"
+          type="button"
+          title="Open your balance"
+        >
+          <span data-i18n="balance_label">Balance:</span>
+          <b id="creditBalance">
+            $0
+          </b>
+        </button>
+
+        <div class="session-actions">
+
+          <button
+            id="welcomeEmailButton"
+            type="button"
+            data-i18n="btn_welcome_email"
+          >
+            Email welcome note
+          </button>
+
+          <button
+            id="backToLogin"
+            type="button"
+            data-i18n="btn_logout"
+          >
+            Back to login
+          </button>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <main id="top">
+
+      <!-- HERO -->
+
+      <section class="hero">
+
+        <div class="hero-copy">
+
+          <p class="eyebrow" data-i18n="hero_eyebrow">
+            The living data library
+            <span></span>
+          </p>
+
+          <h1 data-i18n="hero_heading">
+            Better questions<br>
+            <em>start in the water.</em>
+          </h1>
+
+          <p class="hero-intro" data-i18n="hero_intro">
+            Curated fish datasets for ocean lovers,
+            students, storytellers, and scientists.
+            Find a dataset, follow the evidence,
+            make something meaningful.
+          </p>
+
+          <a
+            class="primary-link"
+            href="#catalog"
+          >
+            <span data-i18n="hero_cta">Browse the collection</span>
+            <span>↘</span>
+          </a>
+
+        </div>
+
+
+        <div
+          class="hero-art"
+          aria-label="Illustration of a school of fish"
+          role="img"
+        >
+
+          <div class="coordinate">
+            33° 51' S / 151° 12' E
+          </div>
+
+          <div class="fish fish-one">
+            ◒<span>›</span>
+          </div>
+
+          <div class="fish fish-two">
+            ◒<span>›</span>
+          </div>
+
+          <div class="fish fish-three">
+            ◒<span>›</span>
+          </div>
+
+          <div class="fish fish-four">
+            ◒<span>›</span>
+          </div>
+
+          <div class="depth depth-one">
+            0m
+          </div>
+
+          <div class="depth depth-two">
+            120m
+          </div>
+
+          <div class="depth depth-three">
+            240m
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- CATALOG -->
+
+      <section
+        class="catalog-section"
+        id="catalog"
+      >
+
+        <div class="section-heading">
+
+          <div>
+
+            <p class="eyebrow" data-i18n="catalog_eyebrow">
+              Field notes / 004
+            </p>
+
+            <h2 data-i18n="catalog_heading">
+              Find your next field trip.
+            </h2>
+
+          </div>
+
+          <p class="section-note" data-i18n="catalog_note">
+            Every dataset is documented,
+            downloadable, and made to be understood.
+          </p>
+
+        </div>
+
+
+        <div class="controls">
+
+          <label class="search">
+
+            <span>⌕</span>
+
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Search species, place, or topic"
+              data-i18n-ph="search_placeholder"
+              aria-label="Search datasets"
+            >
+
+          </label>
+
+
+          <div
+            class="filters"
+            id="filters"
+          >
+
+            <button
+              class="filter active"
+              data-filter="All"
+              data-i18n="filter_all"
+            >
+              All data
+            </button>
+
+            <button
+              class="filter"
+              data-filter="Oceans"
+              data-i18n="filter_oceans"
+            >
+              Oceans
+            </button>
+
+            <button
+              class="filter"
+              data-filter="Freshwater"
+              data-i18n="filter_freshwater"
+            >
+              Freshwater
+            </button>
+
+            <button
+              class="filter"
+              data-filter="Climate"
+              data-i18n="filter_climate"
+            >
+              Climate
+            </button>
+
+          </div>
+
+          <div class="advanced-filters" aria-label="Advanced dataset filters">
+            <select id="speciesFilter" aria-label="Species filter"><option value="" data-i18n="filter_species">Species</option></select>
+            <select id="locationFilter" aria-label="Location filter"><option value="" data-i18n="filter_location">Location</option></select>
+            <select id="waterFilter" aria-label="Water type filter"><option value="" data-i18n="filter_water">Water type</option><option value="Saltwater">Saltwater</option><option value="Freshwater">Freshwater</option></select>
+            <input id="dateFilter" type="date" aria-label="Collected after" title="Collected after">
+          </div>
+
+        </div>
+
+
+        <div
+          class="product-grid"
+          id="productGrid"
+        ></div>
+
+        <div class="catalog-pagination" id="catalogPagination" aria-label="Dataset pages"></div>
+
+      </section>
+
+      <section class="intelligence-section" id="intelligence" aria-labelledby="intelligenceTitle">
+        <div class="section-heading">
+          <div><p class="eyebrow">DATA / SIGNALS</p><h2 id="intelligenceTitle" data-i18n="detail_map">Observation map</h2></div>
+          <p class="section-note" data-i18n="detail_trend">Observation trend</p>
+        </div>
+        <div class="insight-layout">
+          <div>
+            <div class="map-controls" aria-label="Map filters">
+              <select id="mapRegionFilter" aria-label="Map region"><option value="" data-i18n="map_region">All regions</option></select>
+              <select id="mapSpeciesFilter" aria-label="Map species"><option value="" data-i18n="map_species">All species</option></select>
+              <select id="mapYearFilter" aria-label="Map year"><option value="" data-i18n="map_year">All years</option></select>
+            </div>
+            <div class="observation-map" id="observationMap" role="img" aria-label="Interactive observation map"></div>
+          </div>
+          <div class="insight-panel" id="insightPanel"><p class="eyebrow">DATA SWARM / LIVE</p><h3 data-i18n="choose_dataset">Choose a dataset</h3><p data-i18n="map_panel_intro">Open any card to see its observation story, preview rows, and environmental signals.</p></div>
+        </div>
+      </section>
+
+      <section class="ask-section ask-drawer" id="askDataSwarm" aria-labelledby="askTitle" aria-hidden="true">
+        <button class="ask-close" id="askClose" type="button" aria-label="Close Ask AI">×</button>
+        <div>
+          <p class="eyebrow"><span class="ai-live-dot" aria-hidden="true"></span> DATA / PYTORCH</p>
+          <h2 id="askTitle" data-i18n="ask_title">Ask DATA SWARM</h2>
+          <p data-i18n="ask_intro">Search the catalog in natural language. Answers are grounded in Data Swarm records.</p>
+          <div class="ask-capabilities" aria-label="AI capabilities" data-i18n-aria="ai_capabilities">
+            <span data-i18n="catalog_search">Catalog search</span><span data-i18n="species_context">Species context</span><span data-i18n="evidence_linked">Evidence linked</span>
+          </div>
+        </div>
+        <form class="ask-form" id="askForm">
+          <input id="askInput" type="search" data-i18n-ph="ask_placeholder" placeholder="Ask about species, places, or years" required>
+          <button type="submit" data-i18n="ask_button">Ask</button>
+        </form>
+        <div id="askResult" class="ask-result" aria-live="polite"></div>
+      </section>
+
+      <section class="contributor-section" id="contribute" aria-labelledby="contributorTitle">
+          <div class="contributor-copy"><p class="eyebrow">FIELD NOTES / 005</p><h2 id="contributorTitle" data-i18n="contributor_title">Submit an observation</h2><p data-i18n="contributor_desc">Turn a sighting into a useful signal for the shared aquatic record.</p></div>
+        <form class="contributor-form" id="observationForm">
+          <input name="species" placeholder="Species" data-i18n-ph="species_placeholder" required>
+          <input name="location" placeholder="Location" data-i18n-ph="location_placeholder" required>
+          <input name="date" type="date" required>
+          <input name="temperature" type="number" placeholder="Water temperature °C" data-i18n-ph="water_temperature_placeholder">
+          <button type="submit" data-i18n="contributor_btn">Submit observation</button>
+          <p class="code-status" id="observationStatus" role="status"></p>
+        </form>
+      </section>
+
+      <!-- REDEEM -->
+
+      <section
+        class="redeem-section"
+        aria-labelledby="redeemTitle"
+      >
+
+        <div class="redeem-section-inner">
+
+          <p class="eyebrow" data-i18n="redeem_eyebrow">
+            Have a code?
+          </p>
+
+          <h2 id="redeemTitle" data-i18n="redeem_title">
+            Add credits to your library.
+          </h2>
+
+          <p data-i18n="redeem_desc">
+            Enter your code below and the credits
+            will be added to this device.
+          </p>
+
+          <form
+            class="page-redeem-row"
+            id="redeemForm"
+          >
+
+            <input
+              id="redeemCode"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="Enter your code"
+              data-i18n-ph="redeem_input_ph"
+              aria-label="Credit code"
+              required
+            >
+
+            <button type="submit" data-i18n="redeem_btn">
+              Redeem code
+            </button>
+
+          </form>
+
+          <p
+            class="code-status"
+            id="redeemStatus"
+            role="status"
+          ></p>
+
+        </div>
+
+      </section>
+
+
+      <!-- FISH GALLERY -->
+
+      <section
+        class="fish-gallery"
+        aria-labelledby="fishGalleryTitle"
+      >
+
+        <div class="fish-gallery-heading">
+
+          <div>
+
+            <p class="eyebrow" data-i18n="gallery_eyebrow">
+              From the field archive
+            </p>
+
+            <h2 id="fishGalleryTitle" data-i18n="gallery_title">
+              Meet the subjects.
+            </h2>
+
+          </div>
+
+          <p data-i18n="gallery_desc">
+            Real underwater references for the curious
+            minds behind every dataset.
+          </p>
+
+        </div>
+
+
+        <div class="fish-gallery-grid">
+
+          <figure class="fish-photo">
+
+            <img
+              src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Fish_at_the_great_barrier_reef.jpg"
+              alt="Reef fish at the Great Barrier Reef"
+              loading="eager"
+            >
+
+            <figcaption data-i18n="gallery_caption_1">
+              Reef fish / coral gardens
+            </figcaption>
+
+          </figure>
+
+
+          <figure class="fish-photo">
+
+            <img
+              src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Shark_underwater.jpg"
+              alt="Shark swimming underwater"
+              loading="eager"
+            >
+
+            <figcaption data-i18n="gallery_caption_2">
+              Open water / shark routes
+            </figcaption>
+
+          </figure>
+
+
+          <figure class="fish-photo">
+
+            <img
+              src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Mangrove_Jack_Taiwan.jpg"
+              alt="Mangrove Jack fish"
+              loading="eager"
+            >
+
+            <figcaption data-i18n="gallery_caption_3">
+              Mangrove nurseries / Mangrove Jack
+            </figcaption>
+
+          </figure>
+
+        </div>
+
+      </section>
+
+
+      <!-- ABOUT -->
+
+      <section
+        class="about"
+        id="about"
+      >
+
+        <p class="eyebrow" data-i18n="about_eyebrow">
+          Built for curious minds
+        </p>
+
+        <h2 data-i18n="about_heading">
+          Data should feel<br>
+          <em>alive.</em>
+        </h2>
+
+        <p data-i18n="about_desc">
+          Data Swarm makes the hidden patterns of aquatic
+          life easier to find and more rewarding to explore.
+          Each collection pairs clean files with context
+          from the people who gathered them.
+        </p>
+
+        <a
+          class="text-link"
+          href="mailto:hello@dataswarm.example"
+          data-i18n="about_link"
+        >
+          Talk to the swarm ↗
+        </a>
+
+      </section>
+
+    </main>
+
+
+    <!-- =========================
+         FOOTER
+         ========================= -->
+
+    <footer>
+
+      <span data-i18n="footer_copy">
+        © 2026 Data Swarm
+      </span>
+
+      <span data-i18n="footer_credit">
+        Made by Taha Karmani
+      </span>
+
+    </footer>
+
+
+    <div
+      class="wave-footer"
+      aria-hidden="true"
+    ></div>
+
+
+    <!-- =========================
+         PHOTO PREVIEW
+         ========================= -->
+
+    <div
+      class="photo-preview-backdrop"
+      id="photoPreview"
+      hidden
+    >
+
+      <section
+        class="photo-preview"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="previewTitle"
+      >
+
+        <button
+          class="photo-preview-close"
+          id="closePhotoPreview"
+          type="button"
+          aria-label="Close photo preview"
+        >
+          ×
+        </button>
+
+        <img
+          id="previewImage"
+          src=""
+          alt=""
+        >
+
+        <div>
+
+          <p class="eyebrow" data-i18n="preview_eyebrow">
+            Photo preview
+          </p>
+
+          <h2 id="previewTitle"></h2>
+
+          <p data-i18n="preview_desc">
+            Review the fish photo before adding
+            this dataset to your bag.
+          </p>
+
+          <a
+            class="photo-source"
+            id="previewSource"
+            href="#"
+            target="_blank"
+            rel="noreferrer"
+            data-i18n="preview_link"
+          >
+            Open original photo ↗
+          </a>
+
+        </div>
+
+      </section>
+
+    </div>
+
+
+    <!-- TOAST -->
+
+    <div
+      class="toast"
+      id="toast"
+      role="status"
+    ></div>
+
+  </div>
+
+
+    <!-- APP JAVASCRIPT -->
+  <script src="app.js"></script>
+
+<!-- DATASWARM AI CHAT -->
+<div id="aiChatWidget" class="ai-chat-widget">
+  <button id="aiChatButton" class="ai-chat-button" type="button" aria-controls="aiChatWindow" aria-expanded="false">
+    <span class="ai-chat-button-mark" aria-hidden="true">✦</span>
+    <span data-i18n="chat_ask">Ask Data Swarm</span>
+    <span class="ai-chat-button-status" aria-hidden="true"></span>
+  </button>
+
+  <section id="aiChatWindow" class="ai-chat-window" hidden aria-label="Data Swarm AI assistant" data-i18n-aria="chat_assistant">
+    <div class="ai-chat-header">
+      <div class="ai-chat-title">
+        <span class="ai-chat-avatar" aria-hidden="true">DS</span>
+        <div>
+          <strong data-i18n="chat_assistant">Data Swarm AI</strong>
+          <small><span class="ai-chat-live-dot"></span><span id="aiChatModel" data-i18n="chat_connecting">Connecting to Ollama</span></small>
+        </div>
+      </div>
+      <button id="aiChatClose" class="ai-chat-close" type="button" aria-label="Close chat" data-i18n-aria="chat_close">×</button>
+    </div>
+
+    <div id="aiChatMessages" class="ai-chat-messages" aria-live="polite">
+      <div class="ai-message">
+        <strong data-i18n="chat_welcome">Welcome to the swarm.</strong>
+        <span data-i18n="chat_intro">I can explain fish, oceans, climate, conservation, or help you find a dataset.</span>
+      </div>
+      <div class="ai-chat-suggestions" aria-label="Suggested questions">
+        <button type="button" data-prompt="Which dataset should I start with for coral reef research?" data-i18n="chat_find">Find a dataset</button>
+        <button type="button" data-prompt="Explain how ocean temperature affects fish populations." data-i18n="chat_topic">Explain a topic</button>
+        <button type="button" data-prompt="What can you tell me about marine conservation?" data-i18n="chat_conservation">Explore conservation</button>
+      </div>
+    </div>
+
+    <form id="aiChatForm" class="ai-chat-form">
+      <input id="aiChatInput" type="text" placeholder="Ask anything about aquatic life..." data-i18n-ph="chat_placeholder" autocomplete="off" required>
+      <button type="submit" aria-label="Send message">↗</button>
+    </form>
+    <div class="ai-chat-footer"><span data-i18n="chat_local">LOCAL MODEL</span><span>OLLAMA</span><span data-i18n="chat_private">PRIVATE BY DEFAULT</span></div>
+  </section>
+</div></body>
+</html>
